@@ -95,7 +95,7 @@ struct ContentView: View {
 }
 ```
 
-Expectedly this did not worked or the sucess rate was pretty bad, but then I attempted something differently and I was stunned by this dicovery. It turns out the sucess rate of restarting your own app using this vulnerability increases the longer the loop occurs. So i changed...
+Expectedly this did not worked or the success rate was pretty bad, but then I attempted something differently and I was stunned by this dicovery. It turns out the success rate of restarting your own app using this vulnerability increases the longer the loop occurs. So i changed...
 
 ```swift
 exit(0)
@@ -114,9 +114,9 @@ pthread_dispatch {
 
 Using this I made the implementation for restarting the iOS app it self reliable.
 
-### How does it work?
+### Why does it work?
 
-It works because of improper checks of the `lsd` (Launch Services Daemon) which is responsible for managing requests of opening applications via the `MobileCoreServices` framework, specifically when invoking `- (BOOL)openApplicationWithBundleID:(id)arg1;` your app is giving the request to `lsd` which then manages to open the app, so where is the problem... when ur doing it in a while loop and in a background thread you dont wait on the return of this method and can simply continue code execution without waiting on its return which apple didnt accounted for, although this is a common security concern. What then happens is that if we call `exit(0)` the `lsd` process is still processing the request. When your app then gets terminated by your own `exit(0)` call `lsd` fails to address that and continues with opening your own app although terminated which results in the app self relaunching.
+It works because of improper checks of the `lsd` (Launch Services Daemon) which is responsible for managing requests of opening applications via the `MobileCoreServices` framework, specifically when invoking `- (BOOL)openApplicationWithBundleID:(id)arg1;` your app is giving the request to `lsd` which then manages to open the app, so where is the problem... when ur doing it in a while loop and in a background thread you dont wait on the return of this method and can simply continue code execution without waiting on its return which apple didnt accounted for, although this is a common security concern. What then happens is that if we call `exit(0)` the `lsd` process is still processing the request. When your app then gets terminated by your own `exit(0)` call `lsd` fails to address that and continues with opening your own app although terminated which results in the app self relaunching. This concept doesnt change when the user initiated the app termination using the app switcher. What's also interesting is that the vulnerability has a higher success rate when the user kills the app using the app switcher, actually I never encountered a failure when killing the malicious application over the app switcher which might also be related to how `lsd` and `SpringBoard` work together.
 
 ### Why is this dangerous?
 
