@@ -40,7 +40,7 @@ func pthread_dispatch(_ code: @escaping () -> Void) {
 
 struct ContentView: View {
   var body: some View {
-    Text("You now have to force quit")
+    Text("You now have to force reboot now")
     .onAppear {
       // Get the workspace
       guard let workspace = LSApplicationWorkspace.default() else { return }
