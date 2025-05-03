@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import os
 
 func pthread_dispatch(_ code: @escaping () -> Void) {
     var thread: pthread_t?
@@ -39,8 +40,11 @@ func EvilWorkspace(mode: EvilEnum) {
     switch mode {
     case .restart:
         pthread_dispatch {
-            Thread.sleep(forTimeInterval: 0.2)
-            exit(0)
+            //
+            // IDK, why yet, but calling this from a background thread which makes this 100% reliable reincarnation method.
+            //
+            UIControl().sendAction(#selector(NSXPCConnection.suspend),
+                                           to: UIApplication.shared, for: nil)
         }
         break
     case .stayalive:
