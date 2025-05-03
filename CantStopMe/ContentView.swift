@@ -7,84 +7,40 @@
 
 import SwiftUI
 
-func pthread_dispatch(_ code: @escaping () -> Void) {
-    var thread: pthread_t?
-    let blockPointer = UnsafeMutableRawPointer(Unmanaged.passRetained(code as AnyObject).toOpaque())
-    
-    pthread_create(&thread, nil, { ptr in
-        let unmanaged = Unmanaged<AnyObject>.fromOpaque(ptr)
-        let block = unmanaged.takeRetainedValue() as! () -> Void
-        block()
-        return nil
-    }, blockPointer)
-}
-
 struct ContentView: View {
-    
-    @State var disabled: Bool = false
     @AppStorage("isEvil") var isEvil: Bool = false
+    
+    init() {
+        if isEvil {
+            EvilWorkspace(mode: .stayalive)
+        }
+    }
     
     var body: some View {
         VStack {
-            Text("EvilWorkspace")
+            Text("Evil")
+                .foregroundColor(.red)
+                .font(.system(size: 40)) +
+            Text("Workspace")
+                .foregroundColor(.white)
                 .font(.system(size: 40))
             Spacer()
             Button(isEvil ? "Dont be Evil" : "Be Evil") {
                 if !isEvil {
-                    evilRestartLoop()
-                } else {
-                    isEvil = false
-                    disabled = false
+                    EvilWorkspace(mode: .stayalive)
                 }
+                isEvil = !isEvil
             }
             .foregroundColor(isEvil ? .red : .blue)
             Spacer().frame(height: 50)
             Button("Restart App") {
-                evilRestart()
+                EvilWorkspace(mode: .restart)
             }
-            .disabled(disabled)
+            .disabled(isEvil)
             Spacer()
-            Text("PID: \(getpid())")
+            Text("PID: \(String(getpid()))")
             Text("Discovered by.SeanIsTethered")
         }
         .padding()
-        .onAppear {
-            if isEvil {
-                evilRestartLoop()
-            }
-        }
-    }
-    
-    func evilRestartLoop() {
-        isEvil = true
-        disabled = true
-        
-        guard let workspace = LSApplicationWorkspace.default() else { return }
-        
-        pthread_dispatch {
-            while true {
-                workspace.openApplication(withBundleID: Bundle.main.bundleIdentifier)
-                if !isEvil {
-                    return
-                }
-            }
-        }
-    }
-    
-    func evilRestart() {
-        disabled = true
-        
-        guard let workspace = LSApplicationWorkspace.default() else { return }
-        
-        pthread_dispatch {
-            while true {
-                workspace.openApplication(withBundleID: Bundle.main.bundleIdentifier)
-            }
-        }
-        
-        pthread_dispatch {
-            Thread.sleep(forTimeInterval: 0.2)
-            exit(0)
-        }
     }
 }
