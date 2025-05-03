@@ -44,6 +44,7 @@ func EvilWorkspace(mode: EvilEnum) {
             Thread.sleep(forTimeInterval: 0.2)
             exit(0)
         }
+        break
     case .stayalive:
         break
     }
