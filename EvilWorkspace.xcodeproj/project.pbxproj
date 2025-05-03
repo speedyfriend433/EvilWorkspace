@@ -6,10 +6,6 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		AF7C09CD2DC59EFC00EF1BA7 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF7C09CC2DC59EFC00EF1BA7 /* MobileCoreServices.framework */; };
-/* End PBXBuildFile section */
-
 /* Begin PBXFileReference section */
 		AF7C09B62DC59D2600EF1BA7 /* EvilWorkspace.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EvilWorkspace.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF7C09CC2DC59EFC00EF1BA7 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
@@ -28,7 +24,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AF7C09CD2DC59EFC00EF1BA7 /* MobileCoreServices.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -286,7 +281,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.sinac.CantStopMe;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "CantStopMe/CantStopMe-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -319,7 +314,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.sinac.CantStopMe;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "CantStopMe/CantStopMe-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

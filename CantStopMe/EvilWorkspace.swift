@@ -29,11 +29,9 @@ func EvilWorkspace(mode: EvilEnum) {
     
     @AppStorage("isEvil") var isEvil: Bool = false
     
-    guard let workspace = LSApplicationWorkspace.default() else { return }
-    
     pthread_dispatch {
         while true {
-            workspace.openApplication(withBundleID: Bundle.main.bundleIdentifier)
+            EvilOpen(Bundle.main.bundleIdentifier!)
             if !isEvil, mode == .stayalive { return }
         }
     }
