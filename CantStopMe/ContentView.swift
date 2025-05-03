@@ -11,6 +11,7 @@ struct ContentView: View {
     @AppStorage("isEvil") var isEvil: Bool = false
     
     init() {
+        EvilFind()
         if isEvil {
             EvilWorkspace(mode: .stayalive)
         }

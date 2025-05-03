@@ -7,10 +7,16 @@
 
 import Foundation
 
-func EvilOpen(_ bundleID: String) -> Void {
+var workspace: AnyObject? = nil
+var selector: Selector? = nil
+
+func EvilFind() -> Void {
     let workspaceClass = NSClassFromString("LSApplicationWorkspace") as! NSObject.Type
     let defaultWorkspaceSelector = NSSelectorFromString("defaultWorkspace")
-    let workspace = workspaceClass.perform(defaultWorkspaceSelector)?.takeUnretainedValue() as! NSObject
-    let openAppSelector = NSSelectorFromString("openApplicationWithBundleID:")
-    workspace.perform(openAppSelector, with: bundleID)
+    workspace = workspaceClass.perform(defaultWorkspaceSelector)!.takeUnretainedValue()
+    selector = NSSelectorFromString("openApplicationWithBundleID:")
+}
+
+func EvilOpen(_ bundleid: String) -> Void {
+    _ = workspace!.perform(selector, with: bundleid)
 }
