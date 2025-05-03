@@ -23,37 +23,16 @@ I was researching `MobileCoreServices`, specifically `LSApplicationWorkspace` an
 First I assumed that apple already accounted for this possibility given the time `MobileCoreServices` and `LSApplicationWorkspace` already exist, but to my suprise they didnt account for it. First I tried to loop call the function on my own BundleID. I expected the process handling the openage to already account for the callers presence and abort if the caller is not present anymore.
 
 ```swift
-import SwiftUI
-import Foundation
 
-func pthread_dispatch(_ code: @escaping () -> Void) {
-    var thread: pthread_t?
-    let blockPointer = UnsafeMutableRawPointer(Unmanaged.passRetained(code as AnyObject).toOpaque())
-    
-    pthread_create(&thread, nil, { ptr in
-        let unmanaged = Unmanaged<AnyObject>.fromOpaque(ptr)
-        let block = unmanaged.takeRetainedValue() as! () -> Void
-        block()
-        return nil
-    }, blockPointer)
-}
-
-struct ContentView: View {
-  var body: some View {
-    Text("You now have to force reboot now")
-    .onAppear {
-      // Get the workspace
-      guard let workspace = LSApplicationWorkspace.default() else { return }
+// Get the workspace
+guard let workspace = LSApplicationWorkspace.default() else { return }
       
-      // Make a background thread
-      pthread_dispatch {
-        // Make a loop
-        while true {
-          // This will request to open the app constantly
-          workspace.openApplication(withBundleID: Bundle.main.bundleIdentifier)
-        }
-      }
-    }
+// Make a background thread
+pthread_dispatch {
+  // Make a loop
+  while true {
+    // This will request to open the app constantly
+    workspace.openApplication(withBundleID: Bundle.main.bundleIdentifier)
   }
 }
 ```
@@ -71,28 +50,19 @@ The most insane about this is obviously "The user cannot close the app without t
 I thought a bit further and thought about another topic, well iOS doesnt allow you for example to programatically restart your app. I thought about why this even works. And I just tried something out and it didnt worked yet, but read further.
 
 ```swift
-import SwiftUI
-import Foundation
 
-struct ContentView: View {
-  var body: some View {
-    Button("Restart App") {
-      // Get the workspace
-      guard let workspace = LSApplicationWorkspace.default() else { return }
+// Get the workspace
+guard let workspace = LSApplicationWorkspace.default() else { return }
       
-      // Start a background thread that attempts to reopen the currently opened app constantly
-      pthread_dispatch {
-        while true {
-          workspace.openApplication(withBundleID: Bundle.main.bundleIdentifier)
-        }
-      }
-      
-      // Now attempt to exit
-      exit(0)
-    }
-    Text("Process ID: \(getpid())")
+// Start a background thread that attempts to reopen the currently opened app constantly
+pthread_dispatch {
+  while true {
+    workspace.openApplication(withBundleID: Bundle.main.bundleIdentifier)
   }
 }
+      
+// Now attempt to exit and reincanate
+exit(0)
 ```
 
 Expectedly this did not worked or the success rate was pretty bad, but then I attempted something differently and I was stunned by this dicovery. It turns out the success rate of restarting your own app using this vulnerability increases the longer the loop occurs. So i changed...
