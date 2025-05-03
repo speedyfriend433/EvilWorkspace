@@ -122,5 +122,5 @@ It works because of improper checks of the `lsd` (Launch Services Daemon) which 
 
 A attacker could use this vulnerability maliciously to bypass the user interaction of killing the attackers app using the app switcher and bypassing the users attempt to uninstall the app(which is a side-effect cause of the self-open which dismisses the uninstallation menu) and additionally stay opened for ever, no matter what the user does, which leads to a malicious **persistence exploit**. Additionally as the opening of the app is a side-effect it's super annoying. It's also a privacy concern as data can be exfiltrated without the users consent. And the vulnerability could be used in a chain to ensure the user cannot escape a certain hacking attempt of their phone. Additionally no special entitlements are needed to use this vulnerability which empowers every app to use this vulnerability.
 
-
-
+### Theory
+I think this vulnerability exists because when apple added Launch services in iOS 2.0 they havent had multitasking yet.. they mostlikely forgot to make the selector secure for multitasking and thats likely why the vulnerability exists. was likely first exploitable in iOS 7.0 when apple added multitasking.
