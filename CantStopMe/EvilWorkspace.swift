@@ -9,45 +9,69 @@ import Foundation
 import SwiftUI
 import os
 
-func pthread_dispatch(_ code: @escaping () -> Void) {
-    var thread: pthread_t?
-    let blockPointer = UnsafeMutableRawPointer(Unmanaged.passRetained(code as AnyObject).toOpaque())
-    
-    pthread_create(&thread, nil, { ptr in
-        let unmanaged = Unmanaged<AnyObject>.fromOpaque(ptr)
-        let block = unmanaged.takeRetainedValue() as! () -> Void
-        block()
-        return nil
-    }, blockPointer)
+enum EvilMode {
+    case stayAlive
+    case restartNow
 }
 
-enum EvilEnum {
-    case stayalive
-    case restart
-}
+class EvilPersistenceManager {
 
-func EvilWorkspace(mode: EvilEnum) {
-    
-    @AppStorage("isEvil") var isEvil: Bool = false
-    
-    pthread_dispatch {
-        while true {
-            EvilOpen(Bundle.main.bundleIdentifier!)
-            if !isEvil, mode == .stayalive { return }
+    private static let log = Logger(subsystem: Bundle.main.bundleIdentifier ?? "EvilApp", category: "Persistence")
+    private static var isLoopActive = false
+
+    static func manageEvilProcess(mode: EvilMode, isEvil: Binding<Bool>) {
+
+        guard let service = EvilWorkspaceService.shared else {
+            log.error("❌ Cannot manage evil process: EvilWorkspaceService failed to initialize.")
+            DispatchQueue.main.async {
+                isEvil.wrappedValue = false
+            }
+            return
         }
-    }
-    
-    switch mode {
-    case .restart:
-        pthread_dispatch {
-            //
-            // IDK, why yet, but calling this from a background thread which makes this 100% reliable reincarnation method.
-            //
-            UIControl().sendAction(#selector(NSXPCConnection.suspend),
-                                           to: UIApplication.shared, for: nil)
+
+        guard let currentBundleID = Bundle.main.bundleIdentifier else {
+            log.error("❌ Cannot manage evil process: Could not get bundle identifier.")
+            return
         }
-        break
-    case .stayalive:
-        break
+
+        switch mode {
+        case .stayAlive:
+            guard !isLoopActive else {
+                log.info("ℹ️ Persistence loop already active.")
+                return
+            }
+            
+            guard isEvil.wrappedValue else {
+                log.info("ℹ️ StayAlive requested but isEvil is false. Not starting loop.")
+                return
+            }
+
+            isLoopActive = true
+            log.notice("▶️ Starting persistence loop...")
+
+            DispatchQueue.global(qos: .background).async {
+                while isEvil.wrappedValue {
+                    log.debug("♻️ Persistence loop: Attempting relaunch of \(currentBundleID)")
+                    service.openApplication(bundleID: currentBundleID)
+
+                    let sleepInterval: TimeInterval = 15.0
+                    Thread.sleep(forTimeInterval: sleepInterval)
+
+                    if !isEvil.wrappedValue {
+                         break
+                    }
+                }
+                isLoopActive = false
+                log.notice("⏹️ Persistence loop stopped.")
+                 DispatchQueue.main.async {
+                    if isEvil.wrappedValue {
+                    }
+                 }
+            }
+
+        case .restartNow:
+            log.warning("🚀 Triggering force restart...")
+            service.forceRestartOrSuspend()
+        }
     }
 }

@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		E10D5FF62DC6FE910000CFC2 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF7C09CC2DC59EFC00EF1BA7 /* MobileCoreServices.framework */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		AF7C09B62DC59D2600EF1BA7 /* EvilWorkspace.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EvilWorkspace.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF7C09CC2DC59EFC00EF1BA7 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
@@ -24,6 +28,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E10D5FF62DC6FE910000CFC2 /* MobileCoreServices.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
